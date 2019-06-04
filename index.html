@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stryk - Extreme Gaming Bonanza!</title>
+    <style type="text/css">
+        html, body, canvas {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<script src="wasm_exec.js"></script>
+<script>
+    async function run(fileUrl) {
+        try {
+            const file = await fetch(fileUrl);
+            const buffer = await file.arrayBuffer();
+            const go = new Go();
+            const {instance} = await WebAssembly.instantiate(buffer, go.importObject);
+            go.run(instance);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    setTimeout(() => run("./main.wasm"));
+</script>
+</body>
+</html>
