@@ -29,6 +29,7 @@ func loadMap(level int) {
 		json.Unmarshal([]byte(request.GetResponseText()), &levelMap)
 		canvas := getCanvas()
 		game.DrawScene(canvas, levelMap)
+		game.DrawHUD(canvas, levelMap)
 	})
 	request.Open("GET", mapName)
 	request.Send()

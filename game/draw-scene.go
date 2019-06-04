@@ -19,7 +19,7 @@ func getLevelFromMap(levelMap core.LevelMap, x int, y int) int {
 func DrawScene(canvas js.Value, levelMap core.LevelMap) {
 	width := canvas.Get("width").Int()
 	cellWidth := int(math.Round(float64(width) / float64(levelMap.Count)))
-	height := canvas.Get("height").Int()
+	height := math.Floor(canvas.Get("height").Float() * 0.7)
 	cellHeight := int(math.Round(float64(height) / float64(levelMap.Count)))
 
 	context := canvas.Call("getContext", "2d")
