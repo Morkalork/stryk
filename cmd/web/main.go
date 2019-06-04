@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"stryk/core"
 	"stryk/game"
 	"stryk/xhr"
 	"syscall/js"
@@ -24,7 +25,7 @@ func loadMap(level int) {
 	println("Starting!")
 	request.OnLoad(func(args []js.Value) {
 		println("DONE!")
-		var levelMap game.LevelMap
+		var levelMap core.LevelMap
 		json.Unmarshal([]byte(request.GetResponseText()), &levelMap)
 		canvas := getCanvas()
 		game.DrawScene(canvas, levelMap)
