@@ -11,11 +11,18 @@ func Map1() core.LevelMap {
 	padding := 6
 	for col := padding; col < count-padding; col++ {
 		for row := padding; row < count-padding; row++ {
-
+			isBomb := false
+			level := utils.GetRandomValue(0, 4)
+			if utils.GetRandomValue(0, 100) >= 98 {
+				print("BOMB IS REAL!")
+				isBomb = true
+				level = 2
+			}
 			brick := core.Brick{
-				Level: utils.GetRandomValue(0, 4),
-				X:     col,
-				Y:     row,
+				Level:  level,
+				X:      col,
+				Y:      row,
+				IsBomb: isBomb,
 			}
 
 			bricks = append(bricks, brick)
@@ -23,9 +30,9 @@ func Map1() core.LevelMap {
 	}
 
 	levelMap := core.LevelMap{
-		Colors: []string{"#E4FFE1", "#C7FFC2", "#AEFFA7", "#96FF8D"},
-		Count:  count,
-		Bricks: bricks,
+		Colors:  []string{"#E4FFE1", "#C7FFC2", "#AEFFA7", "#96FF8D"},
+		Count:   count,
+		Bricks:  bricks,
 		Seconds: 30,
 	}
 	return levelMap

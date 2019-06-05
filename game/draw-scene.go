@@ -6,14 +6,14 @@ import (
 	"syscall/js"
 )
 
-func getLevelFromMap(levelMap core.LevelMap, x int, y int) int {
+func getBrick(levelMap core.LevelMap, x int, y int) core.Brick {
 	for _, brick := range levelMap.Bricks {
-		if brick.X == x && brick.Y== y {
-			return brick.Level
+		if brick.X == x && brick.Y == y {
+			return brick
 		}
 	}
 
-	return 0
+	return core.Brick{}
 }
 
 func DrawScene(canvas js.Value, levelMap core.LevelMap) {
@@ -25,13 +25,20 @@ func DrawScene(canvas js.Value, levelMap core.LevelMap) {
 	context := canvas.Call("getContext", "2d")
 	bricks := make([]core.Brick, 0)
 
-	for w := 0; w < 100; w++ {
-		for h := 0; h < 100; h++ {
+	for w := 0; w < levelMap.Count; w++ {
+		for h := 0; h < levelMap.Count; h++ {
 			x := w * cellWidth
 			y := h * cellHeight
-			level := getLevelFromMap(levelMap, w, h)
+			matchingBrick := getBrick(levelMap, w, h)
 
-			brick := core.Brick{X: x, Y: y, Width: cellWidth, Height: cellHeight, Level: level}
+			brick := core.Brick{
+				X:      x,
+				Y:      y,
+				Width:  cellWidth,
+				Height: cellHeight,
+				Level:  matchingBrick.Level,
+				IsBomb: matchingBrick.IsBomb,
+			}
 			DrawBrick(levelMap.Colors, brick, context)
 			bricks = append(bricks, brick)
 		}

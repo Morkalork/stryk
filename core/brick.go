@@ -6,4 +6,5 @@ type Brick struct {
 	Width int `json:width`
 	Height int `json:height`
 	Level int `json:level`
+	IsBomb bool `json:isBomb`
 }
