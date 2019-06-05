@@ -25,9 +25,10 @@ func Map2() core.LevelMap {
 	}
 
 	levelMap := core.LevelMap{
-		Colors: []string{"#F0F8FF", "#DBEEFF", "#BFE1FF", "#9ED2FF"},
-		Count:  count,
-		Bricks: bricks,
+		Colors:  []string{"#F0F8FF", "#DBEEFF", "#BFE1FF", "#9ED2FF"},
+		Count:   count,
+		Bricks:  bricks,
+		Seconds: 30,
 	}
 	return levelMap
 }

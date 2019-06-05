@@ -22,9 +22,7 @@ func getCanvas() js.Value {
 func loadMap(level int) {
 	mapName := fmt.Sprintf("assets/map-%d.json", level)
 	request := xhr.New()
-	println("Starting!")
 	request.OnLoad(func(args []js.Value) {
-		println("DONE!")
 		var levelMap core.LevelMap
 		json.Unmarshal([]byte(request.GetResponseText()), &levelMap)
 		canvas := getCanvas()

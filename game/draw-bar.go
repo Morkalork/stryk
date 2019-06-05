@@ -19,7 +19,7 @@ func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, orde
 	context.Set("fillStyle", "#ffffff")
 	context.Call("fillText", label, left, top+(segmentHeight*order))
 
-	barTop := top + (segmentHeight * (order + 1))
+	barTop := int(float64(top) + (float64(segmentHeight) * (float64(order) + 0.5)))
 	lineWidth := 2
 	padding := lineWidth * 2
 	diff := float64(maxValue - currentValue)
@@ -30,13 +30,14 @@ func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, orde
 	context.Call("strokeRect", left, barTop, barWidth, segmentHeight)
 	// Remove old bar
 	context.Set("fillStyle", "#000000")
-	context.Call("fillRect", left + lineWidth, barTop+padding, barWidth - padding, segmentHeight-(padding*2))
+	context.Call("fillRect", left+lineWidth, barTop+padding, barWidth-padding, segmentHeight-(padding*2))
 	// Draw new bar
 	context.Set("fillStyle", "#B6D7F4")
 	context.Call("fillRect", left+padding, barTop+padding, currentBarWidth, segmentHeight-(padding*2))
 }
 
-func DrawTimeBar(canvas js.Value, maxTime int) {
+func DrawTimeBar(canvas js.Value, seconds int) {
+	maxTime := seconds * 10 // Just don't.. you know. Don't.
 	counter := 0
 	timeoutCallback := js.NewCallback(func(args []js.Value) {
 		DrawBar(canvas, maxTime, counter, "Time", 1)
@@ -46,4 +47,8 @@ func DrawTimeBar(canvas js.Value, maxTime int) {
 	for i := maxTime; i > 0; i-- {
 		js.Global().Call("setTimeout", timeoutCallback, 50*i)
 	}
+}
+
+func DrawProgressBar(canvas js.Value, maxProgress int, currentProgress int) {
+	DrawBar(canvas, maxProgress, currentProgress, "Progress", 4)
 }

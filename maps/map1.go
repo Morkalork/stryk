@@ -26,6 +26,7 @@ func Map1() core.LevelMap {
 		Colors: []string{"#E4FFE1", "#C7FFC2", "#AEFFA7", "#96FF8D"},
 		Count:  count,
 		Bricks: bricks,
+		Seconds: 30,
 	}
 	return levelMap
 }
