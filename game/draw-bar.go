@@ -2,8 +2,11 @@ package game
 
 import (
 	"math"
+	"stryk/core"
 	"syscall/js"
 )
+
+var callbackIds []int
 
 func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, order int) {
 	width := canvas.Get("width").Float()
@@ -36,7 +39,15 @@ func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, orde
 	context.Call("fillRect", left+padding, barTop+padding, currentBarWidth, segmentHeight-(padding*2))
 }
 
-func DrawTimeBar(canvas js.Value, seconds int) {
+func DrawTimeBar(canvas js.Value, seconds int, levelMap core.LevelMap) {
+	if callbackIds == nil {
+		callbackIds = make([]int, 0)
+	} else {
+		for _, callbackId := range callbackIds {
+			js.Global().Call("clearTimeout", callbackId)
+		}
+	}
+
 	maxTime := seconds * 10 // Just don't.. you know. Don't.
 	counter := 0
 	timeoutCallback := js.NewCallback(func(args []js.Value) {
@@ -45,7 +56,8 @@ func DrawTimeBar(canvas js.Value, seconds int) {
 	})
 
 	for i := maxTime; i > 0; i-- {
-		js.Global().Call("setTimeout", timeoutCallback, 50*i)
+		callbackId := js.Global().Call("setTimeout", timeoutCallback, 50*i).Int()
+		callbackIds = append(callbackIds, callbackId)
 	}
 }
 

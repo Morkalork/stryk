@@ -25,9 +25,21 @@ func loadMap(level int) {
 	request.OnLoad(func(args []js.Value) {
 		var levelMap core.LevelMap
 		json.Unmarshal([]byte(request.GetResponseText()), &levelMap)
+
+		finisher := make(chan int)
+		levelMap.Finisher = finisher
+
 		canvas := getCanvas()
-		game.DrawScene(canvas, levelMap)
+		bricks := game.DrawScene(canvas, levelMap)
+		game.ActionEngine(levelMap, bricks, canvas)
 		game.DrawHUD(canvas, levelMap)
+
+		go func() {
+			for {
+				currentLevel := <-levelMap.Finisher
+				loadMap(currentLevel + 1)
+			}
+		}()
 	})
 	request.Open("GET", mapName)
 	request.Send()

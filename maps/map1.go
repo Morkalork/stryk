@@ -14,7 +14,6 @@ func Map1() core.LevelMap {
 			isBomb := false
 			level := utils.GetRandomValue(0, 4)
 			if utils.GetRandomValue(0, 100) >= 98 {
-				print("BOMB IS REAL!")
 				isBomb = true
 				level = 2
 			}
@@ -30,7 +29,8 @@ func Map1() core.LevelMap {
 	}
 
 	levelMap := core.LevelMap{
-		Colors:  []string{"#E4FFE1", "#C7FFC2", "#AEFFA7", "#96FF8D"},
+		Id: 1,
+		Colors:  []string{"#F3FFF2","#E4FFE1", "#C7FFC2", "#AEFFA7", "#96FF8D"},
 		Count:   count,
 		Bricks:  bricks,
 		Seconds: 30,

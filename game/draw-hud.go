@@ -15,6 +15,6 @@ func DrawHUD(canvas js.Value, levelMap core.LevelMap) {
 	context.Set("fillStyle", "#000000")
 	context.Call("fillRect", 0, top, width, height)
 
-	go DrawTimeBar(canvas, levelMap.Seconds)
+	go DrawTimeBar(canvas, levelMap.Seconds, levelMap)
 	ResetProgressBar(canvas, levelMap)
 }

@@ -6,6 +6,7 @@ import (
 )
 
 var bricks []core.Brick
+var currentLevelMap core.LevelMap
 
 func detonateBomb(brick core.Brick, levelMap core.LevelMap, canvas js.Value, x int, y int, lastBrick core.Brick) {
 	width := brick.Width
@@ -72,13 +73,24 @@ func CountActiveBricks(bricks []core.Brick) int {
 	return count
 }
 
-func ActionEngine(levelMap core.LevelMap, scene []core.Brick, context js.Value, canvas js.Value) {
+func ActionEngine(levelMap core.LevelMap, scene []core.Brick, canvas js.Value) {
+	println("Action engine ", levelMap.Id)
 	bricks = scene
+	currentLevelMap = levelMap
 	var lastBrick core.Brick
-	mouseMove := js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {
+	// Now. Ok. So this is a terrible ugly-hack to keep a reference to the "mouseMove"
+	// function so that we can remove it from the canvas event listeners once the level is complete :)
+	mouseMove := js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {})
+	mouseMove = js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {
+		println("COLORS", currentLevelMap.Colors[0], currentLevelMap.Colors[1], currentLevelMap.Colors[2], currentLevelMap.Colors[3], currentLevelMap.Id)
 		x := e.Get("clientX").Int()
 		y := e.Get("clientY").Int()
-		lastBrick = updateBrickLevel(levelMap, canvas, x, y, lastBrick, true)
+		lastBrick = updateBrickLevel(currentLevelMap, canvas, x, y, lastBrick, true)
+
+		if CountActiveBricks(bricks) == 0 {
+			canvas.Call("removeEventListener", "mousemove", mouseMove)
+			levelMap.Finisher <- currentLevelMap.Id
+		}
 	})
 	mouseDown := js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {
 		canvas.Call("addEventListener", "mousemove", mouseMove)
