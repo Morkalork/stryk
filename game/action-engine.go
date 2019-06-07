@@ -74,7 +74,6 @@ func CountActiveBricks(bricks []core.Brick) int {
 }
 
 func ActionEngine(levelMap core.LevelMap, scene []core.Brick, canvas js.Value) {
-	println("Action engine ", levelMap.Id)
 	bricks = scene
 	currentLevelMap = levelMap
 	var lastBrick core.Brick
@@ -82,14 +81,13 @@ func ActionEngine(levelMap core.LevelMap, scene []core.Brick, canvas js.Value) {
 	// function so that we can remove it from the canvas event listeners once the level is complete :)
 	mouseMove := js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {})
 	mouseMove = js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {
-		println("COLORS", currentLevelMap.Colors[0], currentLevelMap.Colors[1], currentLevelMap.Colors[2], currentLevelMap.Colors[3], currentLevelMap.Id)
 		x := e.Get("clientX").Int()
 		y := e.Get("clientY").Int()
 		lastBrick = updateBrickLevel(currentLevelMap, canvas, x, y, lastBrick, true)
 
 		if CountActiveBricks(bricks) == 0 {
 			canvas.Call("removeEventListener", "mousemove", mouseMove)
-			levelMap.Finisher <- currentLevelMap.Id
+			levelMap.Emit("Finish", currentLevelMap.Id)
 		}
 	})
 	mouseDown := js.NewEventCallback(js.StopImmediatePropagation, func(e js.Value) {

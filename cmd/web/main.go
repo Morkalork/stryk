@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"stryk/core"
 	"stryk/game"
+	"stryk/modals"
 	"stryk/xhr"
 	"syscall/js"
 )
@@ -26,8 +27,8 @@ func loadMap(level int) {
 		var levelMap core.LevelMap
 		json.Unmarshal([]byte(request.GetResponseText()), &levelMap)
 
-		finisher := make(chan int)
-		levelMap.Finisher = finisher
+		mapChanger := make(chan int)
+		levelMap.AddListener("Finish", mapChanger)
 
 		canvas := getCanvas()
 		bricks := game.DrawScene(canvas, levelMap)
@@ -36,8 +37,10 @@ func loadMap(level int) {
 
 		go func() {
 			for {
-				currentLevel := <-levelMap.Finisher
-				loadMap(currentLevel + 1)
+				currentLevel := <-mapChanger
+				modals.MapCompleteModal(canvas, func() {
+					loadMap(currentLevel + 1)
+				})
 			}
 		}()
 	})

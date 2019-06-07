@@ -6,8 +6,6 @@ import (
 	"syscall/js"
 )
 
-var callbackIds []int
-
 func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, order int) {
 	width := canvas.Get("width").Float()
 	barWidth := int(math.Floor(width * 0.8))
@@ -40,25 +38,30 @@ func DrawBar(canvas js.Value, maxValue int, currentValue int, label string, orde
 }
 
 func DrawTimeBar(canvas js.Value, seconds int, levelMap core.LevelMap) {
-	if callbackIds == nil {
-		callbackIds = make([]int, 0)
-	} else {
-		for _, callbackId := range callbackIds {
-			js.Global().Call("clearTimeout", callbackId)
+	callbackId := 0
+
+	timeKiller := make(chan int)
+	levelMap.AddListener("Finish", timeKiller)
+
+	go func() {
+		for {
+			<-timeKiller
+			js.Global().Call("clearInterval", callbackId)
 		}
-	}
+	}()
 
 	maxTime := seconds * 10 // Just don't.. you know. Don't.
 	counter := 0
-	timeoutCallback := js.NewCallback(func(args []js.Value) {
+	intervalCallback := js.NewCallback(func(args []js.Value) {
 		DrawBar(canvas, maxTime, counter, "Time", 1)
 		counter++
+		if counter > maxTime {
+			js.Global().Call("clearInterval", callbackId)
+		}
 	})
 
-	for i := maxTime; i > 0; i-- {
-		callbackId := js.Global().Call("setTimeout", timeoutCallback, 50*i).Int()
-		callbackIds = append(callbackIds, callbackId)
-	}
+	callbackId = js.Global().Call("setInterval", intervalCallback, 50).Int()
+
 }
 
 func DrawProgressBar(canvas js.Value, maxProgress int, currentProgress int) {
